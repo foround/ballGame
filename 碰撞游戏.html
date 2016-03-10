@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+  <title>Video Player</title>
+</head>
+<style>
+p{
+	height:48px;
+	font-size:36px;
+	font-family:微软雅黑;
+	margin-left:35%;
+}
+div{
+	font-size:16px;
+	margin-left:35%;
+	margin-bottom:40px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+canvas{
+	margin-left:31%;
+	border: 1px solid #000;
+}
+#gameover{
+	width: 200px;
+	height: 120px;
+	border: 1px #999999 solid;
+	background-color: #FFF;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 24px;
+	position: absolute;
+	background-color:#9FF;
+	top: 200px;
+	left: 0px;
+	display: none;
+	border-radius: 5px;
+	text-align: center;
+}
+</style>
+<body>
+<p>碰撞小游戏</p>
+<div>
+<button onClick="history.go(0)">new Game</button>
+score:<span id="score">0</span>
+<span onMouseOver="gua()">tip</span>
+</div>
+
+<div id="gameover"></div>
+
+<canvas  width="280" id="canvas" height="420"></canvas>
+
+<script src="jquery.js"></script>
+<script language="javascript" >
+	var ballx=Math.floor(Math.random()*200)
+	var canvas=document.getElementById("canvas")
+	var context=canvas.getContext("2d")
+	var ball={x:ballx,y:8,vx:5,vy:5,r:8,color:["#f00","#f30","#330","#0f0","#00f"]}
+	var board={x:40,y:410,width:100,height:20}
+	var score=0
+
+window.onload=function(){
+	start()
+}
+
+function start(){
+	ball.y=ball.r+1;
+	ball.vx=5
+	ball.vy=5
+
+
+
+	tm=setInterval(function(){
+		context.clearRect(0,0,canvas.width,canvas.height)
+		context.beginPath()
+		context.fillStyle="#ff0"
+		context.fillRect(board.x,board.y,board.width,board.height)
+		context.fill()
+		context.closePath()
+		context.fillStyle=ball.color[score%5]
+		context.beginPath()
+		context.arc(ball.x-ball.r/2,ball.y+ball.r/2,ball.r,0,Math.PI*2,true)
+		context.fillRect(board.x,board.y,board.width,board.height)
+		context.fill()
+		context.closePath()
+		ball.y+=ball.vy
+		ball.x+=ball.vx
+		if(ball.x<ball.r-1||ball.x>canvas.width+1){
+				ball.vx=-ball.vx
+				score1(score++)
+			}
+		if(ball.y>(canvas.height+ball.r-board.height)){
+			if(ball.x<board.x||ball.x>board.x+board.width){
+				setTimeout(function(){clearInterval(tm)},100)
+				overshow(score)
+			}
+			else{
+				ball.vy=-ball.vy
+				score1(score++)
+			}
+		}
+		if(ball.y<ball.r+1){
+				ball.vy=-ball.vy
+				score1(score++)
+			}
+		}
+	,20)
+
+	window.onkeydown=function(event){
+		if(event.keyCode==37){
+			var t=0
+			var left=setInterval(function(){
+				if(board.x<=0||t>20)
+					clearInterval(left)
+				board.x-=1
+				t++
+			},1)
+		}
+		if(event.keyCode==39){
+			var t=0
+			var right=setInterval(function(){
+				if(board.x>=canvas.width-board.width-ball.r||t>20)
+					clearInterval(right)
+				board.x+=1
+				t++
+			},1)
+		}
+		if(event.keyCode==16)
+			board.width*=2
+		if(event.keyCode==17)
+			board.width/=2
+	}
+}
+
+function score1(c){
+	$("#score").text(c)
+}
+
+function overshow(c){
+	$("#gameover").text("your score is "+c)
+	$("#gameover").fadeIn(1000)
+}
+
+function gua(){
+	alert("左shift开启作弊模式，左ctrl取消作弊模式")
+}
+</script>
+
+</body>
+</html>
